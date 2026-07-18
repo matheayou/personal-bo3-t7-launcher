@@ -14,3 +14,4 @@ A private quality-of-life helper tool for Call of Duty: Black Ops III.
 ## Features
 * Securely boots T7 Patch and stabilizes your game startup.
 * Automatically closes companion tools when you exit the game.
+ai
