@@ -1,3 +1,9 @@
+## Credits & Original Projects
+This launcher is a custom helper setup utilizing the work of the following projects:
+* **Original T7 Patch** developed by [Serious (shiversoftdev)](https://github.com/shiversoftdev/t7patch).
+* **Modified T7 Patch** maintained by [Scroptss](https://github.com/Scroptss/T7Patch).
+
+
 # BO3 T7 Launcher
 A private quality-of-life helper tool for Call of Duty: Black Ops III.
 
