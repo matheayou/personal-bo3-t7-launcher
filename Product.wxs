@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="T7 Patch Launcher" Language="1033" Version="3.0.3" Manufacturer="T7 Security Group" UpgradeCode="a6b896b4-23fb-4638-b11c-2df70cfc8d45">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Enables Directory selection UI -->
+    <Property Id="WIXUI_INSTALLDIR" Value="PATCHFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- Configure the Readme Checkbox on the Exit Screen -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Open README.txt" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+
+    <!-- Link the finish page action to launch the file on exit -->
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchReadme">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed</Publish>
+    </UI>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="DesktopFolder">
+        <Directory Id="INSTALLFOLDER" Name="T7PatchLauncher">
+          <Directory Id="PATCHFOLDER" Name="t7patch_3.03.Windows.Only" />
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <ComponentGroup Id="ProductComponents">
+      
+      <!-- Copy LaunchT7.exe -->
+      <Component Id="C_LaunchT7" Directory="PATCHFOLDER" Guid="cf750d53-a2b1-4c12-9852-5a3d76b1f240">
+        <File Id="F_LaunchT7" Source="LaunchT7.exe" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\T7PatchLauncher" Name="installed" Type="integer" Value="1" />
+        <RemoveFolder Id="RemovePATCHFOLDER" On="uninstall" />
+      </Component>
+
+      <!-- Copy T7 Patch Core Components -->
+      <Component Id="C_PatchCore" Directory="PATCHFOLDER" Guid="d82b36fa-2c8e-49b9-8e45-f0ea7c164bf3">
+        <RegistryValue Root="HKCU" Key="Software\T7PatchLauncher" Name="core_installed" Type="integer" Value="1" KeyPath="yes" />
+        
+        <File Id="F_External_dll" Source="SourceFiles\External.dll" />
+        <File Id="F_Microsoft_Bcl_AsyncInterfaces_dll" Source="SourceFiles\Microsoft.Bcl.AsyncInterfaces.dll" />
+        <File Id="F_Microsoft_Bcl_AsyncInterfaces_xml" Source="SourceFiles\Microsoft.Bcl.AsyncInterfaces.xml" />
+        <File Id="F_System_Buffers_dll" Source="SourceFiles\System.Buffers.dll" />
+        <File Id="F_System_Buffers_xml" Source="SourceFiles\System.Buffers.xml" />
+        <File Id="F_System_Memory_dll" Source="SourceFiles\System.Memory.dll" />
+        <File Id="F_System_Memory_xml" Source="SourceFiles\System.Memory.xml" />
+        <File Id="F_System_Numerics_Vectors_dll" Source="SourceFiles\System.Numerics.Vectors.dll" />
+        <File Id="F_System_Numerics_Vectors_xml" Source="SourceFiles\System.Numerics.Vectors.xml" />
+        <File Id="F_System_Runtime_CompilerServices_Unsafe_dll" Source="SourceFiles\System.Runtime.CompilerServices.Unsafe.dll" />
+        <File Id="F_System_Runtime_CompilerServices_Unsafe_xml" Source="SourceFiles\System.Runtime.CompilerServices.Unsafe.xml" />
+        <File Id="F_System_Text_Encodings_Web_dll" Source="SourceFiles\System.Text.Encodings.Web.dll" />
+        <File Id="F_System_Text_Encodings_Web_xml" Source="SourceFiles\System.Text.Encodings.Web.xml" />
+        <File Id="F_System_Text_Json_dll" Source="SourceFiles\System.Text.Json.dll" />
+        <File Id="F_System_Text_Json_xml" Source="SourceFiles\System.Text.Json.xml" />
+        <File Id="F_System_Threading_Tasks_Extensions_dll" Source="SourceFiles\System.Threading.Tasks.Extensions.dll" />
+        <File Id="F_System_Threading_Tasks_Extensions_xml" Source="SourceFiles\System.Threading.Tasks.Extensions.xml" />
+        <File Id="F_System_ValueTuple_dll" Source="SourceFiles\System.ValueTuple.dll" />
+        <File Id="F_System_ValueTuple_xml" Source="SourceFiles\System.ValueTuple.xml" />
+        <File Id="F_t7dwidm_protect_exe" Source="SourceFiles\t7dwidm_protect.exe" />
+        <File Id="F_t7dwidm_protect_exe_config" Source="SourceFiles\t7dwidm_protect.exe.config" />
+      </Component>
+
+    </ComponentGroup>
+
+    <!-- Run LaunchT7.exe with setup flag after files are fully committed to disk -->
+    <CustomAction Id="RunSetupAction" FileKey="F_LaunchT7" ExeCommand="--setup" Execute="immediate" Return="ignore" />
+
+    <!-- Open README.txt natively using notepad.exe directly inside the installed folder -->
+    <CustomAction Id="LaunchReadme" Directory="PATCHFOLDER" ExeCommand="notepad.exe README.txt" Execute="immediate" Return="asyncNoWait" />
+
+    <!-- Changed trigger target from InstallFiles to InstallFinalize -->
+    <InstallExecuteSequence>
+      <Custom Action="RunSetupAction" After="InstallFinalize">NOT Installed AND NOT REMOVE</Custom>
+    </InstallExecuteSequence>
+
+    <Feature Id="ProductFeature" Title="T7 Patch Launcher" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+  </Product>
+</Wix>
